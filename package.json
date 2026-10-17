@@ -1,5 +1,6 @@
 {
-  "name": "interstellar",
+  "name": "ash-proxy",
+  "description": "Ash Proxy is a web proxy with a clean, customizable interface.",
   "version": "6.2.0",
   "type": "module",
   "engines": {
@@ -13,8 +14,8 @@
     "precommit": "pnpm run format && pnpm biome check --write .",
     "lint": "biome lint --write ."
   },
-  "author": "InterstellarNetwork",
-  "license": "GPL-3.0-or-later",
+  "author": "Ash Proxy contributors",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@mercuryworkshop/bare-mux": "^2.1.9",
     "@mercuryworkshop/epoxy-transport": "file:vendor/mercuryworkshop-epoxy-transport-2.1.28-epx.e5f13bb.tgz",

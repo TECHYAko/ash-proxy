@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
+import { timingSafeEqual } from "node:crypto";
 import http from "node:http";
 import { createRequire } from "node:module";
 import path from "node:path";
@@ -9,7 +10,6 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import basicAuth from "express-basic-auth";
 import config from "../config.js";
-// import { mountAnalytics } from "./analytics.js";
 import { mountGhGames } from "./games.js";
 import { createBlockVerdict, setupFiltering } from "./filtering/index.js";
 import { mountMasqr } from "./Masqr.js";
@@ -54,13 +54,25 @@ function resolvePort() {
     break;
   }
 
-  return flag ? Number(flag) : process.env.PORT || 8080;
+  const port = flag ? Number(flag) : Number(process.env.PORT || 8080);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    console.log(chalk.red(`Invalid port ${JSON.stringify(process.env.PORT)}, expected 1-65535.`));
+    process.exit(1);
+  }
+  return port;
 }
 
 const PORT = resolvePort();
 
-wisp.options.allow_loopback_ips = true;
-wisp.options.allow_private_ips = true;
+if (
+  config.challenge &&
+  (Object.keys(config.users).length !== 1 || config.users[Object.keys(config.users)[0]].length < 16)
+) {
+  throw new Error("Set ASH_PROXY_USERNAME and an ASH_PROXY_PASSWORD of at least 16 characters before starting Ash Proxy.");
+}
+
+wisp.options.allow_loopback_ips = process.env.ASH_PROXY_ALLOW_PRIVATE_IPS === "true";
+wisp.options.allow_private_ips = process.env.ASH_PROXY_ALLOW_PRIVATE_IPS === "true";
 
 const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const blockedSiteMatchers = config.blockedSites.map(host => new RegExp(`(^|\\.)${escapeRegExp(host.trim().toLowerCase())}$`, "i"));
@@ -69,12 +81,36 @@ wisp.options.hostname_blacklist = blockedSiteMatchers.length ? blockedSiteMatche
 const filteringState = await setupFiltering({ wisp, filtering: config.filtering });
 const blockVerdict = createBlockVerdict({ blocklist: blockedSiteMatchers, policy: filteringState.policy });
 
-if (config.challenge !== false) {
-  console.log(chalk.green("🔒 Password protection is enabled! Listing logins below"));
-  Object.entries(config.users).forEach(([username, password]) => {
-    console.log(chalk.blue(`Username: ${username}, Password: ${password}`));
-  });
+app.get("/health", (_req, res) => {
+  res.set("Cache-Control", "no-store").json({ status: "ok" });
+});
+
+if (config.challenge) {
+  console.log(chalk.green("🔒 Password protection is enabled."));
   app.use(basicAuth({ users: config.users, challenge: true }));
+}
+
+function isAuthenticated(req) {
+  if (!config.challenge) return true;
+  const match = /^Basic\s+([A-Za-z0-9+/]+={0,2})$/i.exec(req.headers.authorization ?? "");
+  if (!match) return false;
+  let decoded;
+  try {
+    decoded = Buffer.from(match[1], "base64").toString("utf8");
+  } catch {
+    return false;
+  }
+  const separator = decoded.indexOf(":");
+  if (separator < 0) return false;
+  const username = decoded.slice(0, separator);
+  const password = decoded.slice(separator + 1);
+  const [expectedUsername, expectedPassword] = Object.entries(config.users)[0];
+  const safeEqual = (actual, expected) => {
+    const actualBytes = Buffer.from(actual);
+    const expectedBytes = Buffer.from(expected);
+    return actualBytes.length === expectedBytes.length && timingSafeEqual(actualBytes, expectedBytes);
+  };
+  return safeEqual(username, expectedUsername) && safeEqual(password, expectedPassword);
 }
 
 let masqr = null;
@@ -114,8 +150,6 @@ app.post("/filter/verdict", async (req, res) => {
   const host = typeof req.body?.host === "string" ? req.body.host.slice(0, 254) : "";
   res.set("Cache-Control", "no-store").json(await blockVerdict(host));
 });
-
-// if (vendorMap?.analytics) mountAnalytics(app, vendorMap.analytics);
 
 if (!vendorMap) {
   try {
@@ -179,6 +213,9 @@ server.on("request", (req, res) => {
 });
 
 server.on("upgrade", (req, socket, head) => {
+  if (!isAuthenticated(req)) {
+    return socket.end("HTTP/1.1 401 Unauthorized\r\nWWW-Authenticate: Basic realm=\"Ash Proxy\"\r\nConnection: close\r\n\r\n");
+  }
   if (masqr && !masqr.isAuthorized(req)) return socket.destroy();
   wisp.routeRequest(req, socket, head);
 });
@@ -187,4 +224,6 @@ server.on("listening", () => {
   console.log(chalk.green(`🌍 Server is running on http://localhost:${PORT}`));
 });
 
-server.listen({ port: PORT });
+if (process.env.VERCEL !== "1") server.listen({ port: PORT, host: "0.0.0.0" });
+
+export default server;

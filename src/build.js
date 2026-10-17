@@ -552,16 +552,15 @@ function applySwLocalRenames(source, renames) {
 const INLINE_HANDLER_WINDOW = { "launcher.js": ["bar", "category"] };
 const INLINE_HANDLER_FUNCS = {
   "tabs.js": ["goHome", "goBack", "goForward", "reload", "popoutTab", "toggleDevTools", "toggleFullscreen"],
-  "settings.js": ["toggleAB", "changeEngine", "exportSaveData", "importSaveData", "openAboutBlank"],
+  "settings.js": ["changeEngine", "exportSaveData", "importSaveData"],
   "search.js": ["openUrl"],
   "launcher.js": ["openUrl"],
 };
 const INLINE_HANDLER_ATTR = /(\son(?:keyup|change|click)\s*=\s*")([A-Za-z_$][\w$]*)(\s*\()/gi;
-// window.bar/category (2) + tabs.js funcs (9) + settings.js funcs (6) + search openUrl (1) + launcher openUrl (1).
-const INLINE_HANDLER_JS_COUNT = 19;
+// window.bar/category (2) + tabs.js funcs (9) + settings.js funcs (4) + search openUrl (1) + launcher openUrl (1).
+const INLINE_HANDLER_JS_COUNT = 17;
 // onkeyup/onchange (6) + onclick: tabs (7) + settings (2) + 404 openUrl (1).
-// openAboutBlank stays in settings.js but no longer has an inline caller in HTML.
-const INLINE_HANDLER_HTML_COUNT = 16;
+const INLINE_HANDLER_HTML_COUNT = 14;
 
 function createHandlerRenames() {
   const names = [...new Set([...Object.values(INLINE_HANDLER_WINDOW).flat(), ...Object.values(INLINE_HANDLER_FUNCS).flat()])];

