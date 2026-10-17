@@ -6,7 +6,8 @@
       "src": "src/server.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["dist/**", "static/decoy/**"]
+        "includeFiles": ["dist/**", "static/decoy/**"],
+        "maxDuration": 300
       }
     }
   ],

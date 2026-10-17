@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
     customCloakRow.style.display = cloakDropdown.value === "custom" ? "" : "none";
   }
 
-  cloakDropdown.value = store.get("selectedOption") || "Thesaurus";
+  cloakDropdown.value = store.get("selectedOption") || "Ash Proxy";
   cloakDropdown.addEventListener("change", () => handleDropdownChange(cloakDropdown));
 
   customCloakName.value = store.get("CustomName") || "";
@@ -170,10 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
   customCloakName.addEventListener("change", applyCustomCloak);
   customCloakIcon.addEventListener("change", applyCustomCloak);
   syncCustomCloakRow();
-
-  if (store.get("ab") === "true") {
-    document.getElementById("ab-settings-switch").checked = true;
-  }
 
   const themeDropdown = document.getElementById("theme-dropdown");
   themeDropdown.value = store.get("theme") || "default";
@@ -589,12 +585,13 @@ const cloakOptions = {
   "PBS Learning Media": { name: "PBS LearningMedia | Teaching Resources For Students And Teachers", icon: "/assets/media/favicon/pbslearningmedia.ico" },
   "PBS Learning Media Student Home": { name: "Student Homepage | PBS LearningMedia", icon: "/assets/media/favicon/pbslearningmedia.ico" },
   Drive: { name: "My Drive - Google Drive", icon: "/assets/media/favicon/drive.png" },
-  Classroom: { name: "Нome", icon: "/assets/media/favicon/classroom.png" },
+  Classroom: { name: "Google Classroom", icon: "/assets/media/favicon/classroom.png" },
   Schoology: { name: "Home | Schoology", icon: "/assets/media/favicon/schoology.png" },
   Gmail: { name: "Gmail", icon: "/assets/media/favicon/gmail.png" },
   Clever: { name: "Clever | Portal", icon: "/assets/media/favicon/clever.png" },
   Khan: { name: "Dashboard | Khan Academy", icon: "/assets/media/favicon/khan.png" },
   Dictionary: { name: "Dictionary.com | Meanings & Definitions of English Words", icon: "/assets/media/favicon/dictionary.png" },
+  "Ash Proxy": { name: "Ash Proxy", icon: "/assets/media/favicon/ash.svg" },
   Thesaurus: { name: "Synonyms and Antonyms of Words | Thesaurus.com", icon: "/assets/media/favicon/thesaurus.png" },
   Campus: { name: "Infinite Campus", icon: "/assets/media/favicon/campus.png" },
   IXL: { name: "IXL | Dashboard", icon: "/assets/media/favicon/ixl.png" },
@@ -728,69 +725,6 @@ function themeChange(selectElement) {
   window.applyTheme?.(value);
 }
 
-function openAboutBlank() {
-  let inFrame;
-  try {
-    inFrame = window !== top;
-  } catch {
-    inFrame = true;
-  }
-
-  if (inFrame) {
-    alert("Please open the settings page directly (not inside a frame) to use the AB popup.");
-    return;
-  }
-  if (navigator.userAgent.includes("Firefox")) {
-    alert("AB cloak is not supported in Firefox.");
-    return;
-  }
-
-  const popup = open("about:blank", "_blank");
-  if (!popup || popup.closed) {
-    alert("Window blocked. Please allow popups for this site.");
-    return;
-  }
-
-  const name = store.get("name") || "My Drive - Google Drive";
-  const icon = store.get("icon") || "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png";
-  const panicLink = store.get("pLink") || getRandomURL();
-
-  const doc = popup.document;
-  const iframe = doc.createElement("iframe");
-  const link = doc.createElement("link");
-  const script = doc.createElement("script");
-
-  doc.title = (window.laceTitle || (s => s))(name);
-  link.rel = "icon";
-  link.href = icon;
-
-  iframe.src = location.href;
-  const style = iframe.style;
-  style.position = "fixed";
-  style.top = style.bottom = style.left = style.right = 0;
-  style.border = style.outline = "none";
-  style.width = style.height = "100%";
-
-  script.textContent = `
-    window.onbeforeunload = function (event) {
-      const message = 'Leave Site?';
-      (event || window.event).returnValue = message;
-      return message;
-    };
-  `;
-
-  doc.head.appendChild(link);
-  doc.head.appendChild(script);
-  doc.body.appendChild(iframe);
-
-  (window.top ?? window).location.replace(panicLink);
-}
-
-function toggleAB() {
-  const ab = store.get("ab");
-  store.set("ab", ab === "true" ? "false" : "true");
-}
-
 function changeEngine(dropdown) {
   const engineUrls = {
     Brave: "https://search.brave.com/search?q=",
@@ -873,7 +807,7 @@ function importSaveData() {
           }
         }
         alert("Your save data has been imported. Please test it out.");
-        alert("If you find any issues then report it in GitHub or the Interstellar Discord.");
+        alert("If you find any issues, report them in the Ash Proxy GitHub repository.");
       } catch (error) {
         console.error("Error parsing JSON file:", error);
       }
@@ -881,23 +815,4 @@ function importSaveData() {
     reader.readAsText(file);
   };
   input.click();
-}
-
-function getRandomURL() {
-  const urls = [
-    "https://kahoot.it",
-    "https://classroom.google.com",
-    "https://drive.google.com",
-    "https://google.com",
-    "https://docs.google.com",
-    "https://slides.google.com",
-    "https://www.nasa.gov",
-    "https://blooket.com",
-    "https://clever.com",
-    "https://edpuzzle.com",
-    "https://khanacademy.org",
-    "https://wikipedia.org",
-    "https://dictionary.com",
-  ];
-  return urls[Math.floor(Math.random() * urls.length)];
 }

@@ -6,12 +6,13 @@
   <meta name="referrer" content="no-referrer" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="shortcut icon" id="tab-favicon" href="/assets/media/favicon/thesaurus.png" />
-  <title id="page-title">Synonyms and Antonyms of Words | Thesaurus.com</title>
+  <link rel="shortcut icon" id="tab-favicon" href="/assets/media/favicon/ash.svg" />
+  <title id="page-title">Settings | Ash Proxy</title>
   <link rel="stylesheet" href="/assets/css/global.css" />
   <link rel="stylesheet" href="/assets/css/container.css" />
   <link rel="stylesheet" href="/assets/css/nav.css" />
   <link rel="stylesheet" href="/assets/css/settings.css" />
+  <link rel="stylesheet" href="/assets/css/ash.css" />
   <script src="/assets/js/storage.js"></script>
   <script src="/assets/js/main.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -31,7 +32,7 @@
               </div>
               <div class="settings-item-control">
                 <select id="cloak-dropdown">
-                  <option value="Thesaurus">Default</option>
+                  <option value="Ash Proxy">Default</option>
                   <option value="custom">Custom</option>
                   <option value="Big Ideas Math">Big Ideas Math</option>
                   <option value="Big Ideas Math Assignment Player">Big Ideas Math Assignment Player</option>
@@ -122,25 +123,6 @@
                 </select>
                 <div id="panic-link-custom-row" style="display:none;">
                   <input class="key-form" placeholder="Panic Link" type="text" id="linkInput" value />
-                </div>
-              </div>
-            </div>
-            <div class="settings-item">
-              <div class="settings-item-info">
-                <h3>About:Blank</h3>
-                <p>
-                  Cloak the site in an about:blank page and toggle about:blank on
-                  startup (enabled by default)
-                </p>
-              </div>
-              <div class="settings-item-control">
-                <div id="ab-settings">
-                  <div id="ab-settings-container">
-                    <label class="switch">
-                      <input type="checkbox" id="ab-settings-switch" class="slider-checkbox" onchange="toggleAB()" />
-                      <span class="slider-round"></span>
-                    </label>
-                  </div>
                 </div>
               </div>
             </div>
@@ -364,7 +346,7 @@
         </section>
 
         <section class="settings-card settings-group">
-          <h2 class="settings-group-title"><an>Pro</an>xy</h2>
+          <h2 class="settings-group-title">Proxy</h2>
             <div class="settings-item">
               <div class="settings-item-info">
                 <h3>Tabs Layout</h3>
@@ -402,7 +384,7 @@
               <div class="settings-item-info">
                 <h3>Framework</h3>
                 <p>
-                  Choose the <an>pro</an>xy you want to use.
+                  Choose the proxy engine you want to use.
                 </p>
               </div>
               <div class="settings-item-control">
@@ -470,11 +452,10 @@
                 <p>Version: <span id="app-version">{{VERSION}}</span></p>
                 <p>Last Updated: <span id="last-updated">{{LAST_UPDATED}}</span></p>
                 <p>
-                  Questions? Join our
-                  <a href="https://discord.gg/interstellar">Discord community</a>,
-                  email us at
-                  <a href="mailto:hello@gointerstellar.app">hello@gointerstellar.app</a>, or
-                  <a href="https://docs.gointerstellar.app/faq">check our FAQ</a>!
+                  Ash Proxy is a community-maintained fork of
+                  <a href="https://github.com/InterstellarNetwork/Interstellar">Interstellar</a>.
+                  See the <a href="https://github.com/TECHYAko/ash-proxy">Ash Proxy repository</a>
+                  for source code, support, and deployment guidance.
                 </p>
             </div>
         </section>
@@ -482,7 +463,6 @@
     </div>
   </div>
   <script src="/assets/js/settings.js"></script>
-<script src="/assets/js/analytics.js"></script>
 </body>
 
 </html>

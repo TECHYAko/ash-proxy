@@ -1,12 +1,19 @@
-FROM node:bookworm-slim
-ENV NODE_ENV=production
+FROM node:22-bookworm-slim
 
 WORKDIR /app
 
-COPY ["package.json", "./"]
-
-RUN npm install
-
 COPY . .
 
-CMD [ "node", "src/server.js" ]
+RUN corepack enable \
+  && pnpm install --frozen-lockfile \
+  && pnpm build \
+  && pnpm prune --prod \
+  && mkdir -p /app/data \
+  && chown -R node:node /app
+
+ENV NODE_ENV=production
+EXPOSE 8080
+
+USER node
+
+CMD ["node", "src/server.js"]

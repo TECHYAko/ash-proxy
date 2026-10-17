@@ -1,9 +1,10 @@
+import "dotenv/config";
+
 const config = {
-  // Password protection. Set challenge to true and add users to require a login.
-  challenge: false,
-  users: {
-    interstellar: "password",
-  },
+  challenge: true,
+  users: process.env.ASH_PROXY_USERNAME && process.env.ASH_PROXY_PASSWORD
+    ? { [process.env.ASH_PROXY_USERNAME]: process.env.ASH_PROXY_PASSWORD }
+    : {},
 
   // Domains the proxy refuses to open. Each entry also blocks its subdomains,
   // so "example.com" blocks example.com and www.example.com. Plain hostnames only.
