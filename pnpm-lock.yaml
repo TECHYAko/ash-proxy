@@ -26,8 +26,8 @@ importers:
         specifier: file:vendor/mercuryworkshop-epoxy-transport-2.1.28-epx.e5f13bb.tgz
         version: file:vendor/mercuryworkshop-epoxy-transport-2.1.28-epx.e5f13bb.tgz
       '@mercuryworkshop/libcurl-transport':
-        specifier: ^1.5.2
-        version: 1.5.2
+        specifier: ^2.0.5
+        version: 2.0.5
       '@mercuryworkshop/scramjet':
         specifier: ^1.1.0
         version: 1.1.0
@@ -345,8 +345,8 @@ packages:
     resolution: {integrity: sha512-RAVwFzWnNpbkfxtSC1Z/h2evFjBuYqwxB/63S836jlRbQEkvxZd9MuTcNdiTtUWZlOo1yURVBPeiuzkoAUBCog==, tarball: file:vendor/mercuryworkshop-epoxy-transport-2.1.28-epx.e5f13bb.tgz}
     version: 2.1.28-epx.e5f13bb
 
-  '@mercuryworkshop/libcurl-transport@1.5.2':
-    resolution: {integrity: sha512-E0tD/3W6HE99ypc7CStpchU6xs+TP5u2vms/9q/46BShblB2pbRCNeXHBlvXqdz97nh2Xh4A68DryDt5CM29Dg==}
+  '@mercuryworkshop/libcurl-transport@2.0.5':
+    resolution: {integrity: sha512-YkAPEAWTEUZZkEOejmRQJxNHw90+kNQnoiSqa5H2sExHBXXdGSXEtg7/35A53U8MDVaznpAwjVbXRONSsfatzw==}
 
   '@mercuryworkshop/scramjet@1.1.0':
     resolution: {integrity: sha512-T/9GZqAQX42eYr/t6VGR2m9J4BtIuncRkANo8hBVTGskrr522yuhaADhSu+65DYlhUyQnLUjDikuNYzlgv0Ejw==}
@@ -1386,7 +1386,7 @@ snapshots:
     dependencies:
       '@mercuryworkshop/epoxy-tls': file:vendor/mercuryworkshop-epoxy-tls-2.1.19-1-e5f13bb.tgz
 
-  '@mercuryworkshop/libcurl-transport@1.5.2':
+  '@mercuryworkshop/libcurl-transport@2.0.5':
     dependencies:
       libcurl.js: 0.7.4
 
