@@ -592,7 +592,9 @@ document.addEventListener("DOMContentLoaded", () => {
     dragTab = null;
   });
 
-  createNewTab(takeHandoffUrl());
+  const handoffUrl = takeHandoffUrl();
+  if (handoffUrl) openInNewTab(handoffUrl);
+  else createNewTab(addressBar.INTERNAL_PAGES.home.route);
 });
 
 if (navigator.userAgent.includes("Chrome")) {

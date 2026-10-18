@@ -1,6 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
-
 html,
 body {
    height: 100%;
@@ -13,7 +10,7 @@ body {
    --tab-anim: 250ms cubic-bezier(0.2, 0.7, 0.2, 1);
    --sidebar-width: 13.5rem;
    --rail-width: 2.75rem;
-   font-family: "Inter", sans-serif;
+   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
    text-decoration: none;
    margin: 0;
    overflow: hidden;
@@ -162,7 +159,7 @@ body::before {
    text-transform: uppercase;
    cursor: pointer;
    font-weight: 800;
-   font-family: "Inter", sans-serif;
+   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
    font-style: normal;
    font-size: 3vw;
    transform: translateX(-20%);
@@ -172,7 +169,7 @@ body::before {
    text-transform: uppercase;
    cursor: pointer;
    font-weight: 800;
-   font-family: "Inter", sans-serif;
+   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
    font-style: normal;
    font-size: 3vh;
    transform: translateX(-20%);

@@ -22,6 +22,11 @@
   <div class="nav-bar"></div>
   <div class="main">
     <div class="settings-shell">
+      <header class="settings-heading">
+        <p class="settings-kicker">Ash Proxy preferences</p>
+        <h1>Settings</h1>
+        <p>Adjust how Ash looks and how your browser behaves.</p>
+      </header>
       <div class="settings-content">
         <section class="settings-card settings-group">
           <h2 class="settings-group-title">Cloaking</h2>
@@ -133,129 +138,13 @@
             <div class="settings-item">
               <div class="settings-item-info">
                 <h3>Themes</h3>
-                <p>Customize the look and feel of the site.</p>
+                <p>Choose between the dark and light appearance.</p>
               </div>
               <div class="settings-item-control">
-                <select id="theme-dropdown" class="dropdown">
-                  <optgroup label="Dark">
-                    <option value="default">Default</option>
-                    <option value="black">Black</option>
-                    <option value="midnight">Midnight</option>
-                    <option value="tokyo">Tokyo Night</option>
-                    <option value="sky">Sky</option>
-                    <option value="arctic">Arctic</option>
-                    <option value="forest">Forest</option>
-                    <option value="rose">Rose</option>
-                    <option value="retro">Retro</option>
-                    <option value="neon">Neon</option>
-                    <option value="ocean">Deep Ocean</option>
-                    <option value="synthwave">Synthwave</option>
-                  </optgroup>
-                  <optgroup label="Light">
-                    <option value="light">Light</option>
-                    <option value="cream">Cream</option>
-                    <option value="parchment">Parchment</option>
-                  </optgroup>
-                  <optgroup label="Colors">
-                    <option value="red">Red</option>
-                    <option value="orange">Orange</option>
-                    <option value="yellow">Yellow</option>
-                    <option value="green">Green</option>
-                    <option value="turquoise">Turquoise</option>
-                    <option value="blue">Blue</option>
-                    <option value="purple">Purple</option>
-                    <option value="pink">Pink</option>
-                  </optgroup>
-                  <optgroup label="Pastel">
-                    <option value="pastelRed">Red</option>
-                    <option value="pastelOrange">Orange</option>
-                    <option value="pastelYellow">Yellow</option>
-                    <option value="pastelGreen">Green</option>
-                    <option value="pastelTurquoise">Turquoise</option>
-                    <option value="pastelBlue">Blue</option>
-                    <option value="pastelPurple">Purple</option>
-                    <option value="pastelPink">Pink</option>
-                  </optgroup>
-                  <optgroup label="Catppuccin">
-                    <option value="mocha">Mocha</option>
-                    <option value="macchiato">Macchiato</option>
-                    <option value="frappe">Frappe</option>
-                    <option value="latte">Latte</option>
-                  </optgroup>
+                <select id="theme-dropdown" class="dropdown" aria-label="Color theme">
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
                 </select>
-              </div>
-            </div>
-            <div class="settings-item">
-              <div class="settings-item-info">
-                <h3>Background</h3>
-                <p>Choose the page background.</p>
-              </div>
-              <div class="settings-item-control">
-                <select id="background-dropdown">
-                  <option value="default">Default</option>
-                  <option value="gradient">Gradient</option>
-                  <option value="none">Solid Color</option>
-                </select>
-                <div id="gradient-style-row" style="display:none;">
-                  <select id="gradient-dropdown">
-                    <option value="linear">Linear Gradient</option>
-                    <option value="radial">Radial Gradient</option>
-                    <option value="multi">Multi-Color Gradient</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="settings-item background-image-settings">
-              <div class="settings-item-info">
-                <h3>Background Image</h3>
-                <p>Choose a theme, add your own image, or remove the current background.</p>
-              </div>
-              <div class="settings-item-control">
-                <div id="background-image-actions">
-                  <button class="key-button" id="background-custom-toggle" type="button">Custom background</button>
-                  <button class="key-button" id="background-remove-button" type="button">Remove background</button>
-                </div>
-                <div id="background-custom-row" style="display:none;">
-                  <input class="key-form" type="text" id="background-input" placeholder="Enter image URL" />
-                  <button class="key-button" id="save-button">Save</button>
-                </div>
-                <div id="background-blur-control">
-                  <label for="background-blur"><span class="background-blur-label-text">Background blur</span> <output id="background-blur-value" for="background-blur">0%</output></label>
-                  <input id="background-blur" type="range" min="0" max="100" value="0" />
-                </div>
-                <div id="background-gallery" class="bg-gallery" aria-label="Background image gallery"></div>
-                <button class="key-button" id="background-load-more" type="button">Load more themes</button>
-              </div>
-            </div>
-            <div class="settings-item">
-              <div class="settings-item-info">
-                <h3>Particles</h3>
-                <p>Add an animated particle layer over the background.</p>
-              </div>
-              <div class="settings-item-control">
-                <select id="particles-dropdown">
-                  <option value="off">Off</option>
-                  <option value="on">Stars</option>
-                  <option value="smoke">Smoke</option>
-                  <option value="aurora">Aurora</option>
-                  <optgroup label="Shimmering Dots">
-                    <option value="grid">Grid</option>
-                    <option value="wiggle">Wiggle</option>
-                    <option value="wiggle-grid">Wiggle Grid</option>
-                    <option value="starfield">Starfield</option>
-                    <option value="twist">Twist</option>
-                    <option value="displace">Displace</option>
-                    <option value="shimmer">Shimmer</option>
-                    <option value="organic">Organic</option>
-                    <option value="shimmer-aurora">Aurora Dots</option>
-                    <option value="morph">Morph</option>
-                    <option value="meteors">Meteors</option>
-                  </optgroup>
-                </select>
-                <button class="key-button" id="particles-custom-toggle" type="button">Customize</button>
-                <div id="particles-custom-panel" style="display:none;">
-                  <div id="particles-custom-fields"></div>
-                </div>
               </div>
             </div>
             <div class="settings-item">

@@ -703,7 +703,8 @@ function routeRewriteTable(routes) {
     [`"tabs"`, `"${routes["/tabs"]}"`],
   ];
 }
-const ROUTE_REWRITE_COUNT = 16;
+// Existing internal links plus the lazy-load navigation handoff added in search.js.
+const ROUTE_REWRITE_COUNT = 18;
 
 function applyRouteRewrites(source, table) {
   let count = 0;
