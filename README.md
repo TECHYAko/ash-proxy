@@ -34,31 +34,36 @@ Ash Proxy is a web proxy with a clean, dark interface and a choice of proxy engi
 
 Run `pnpm build` after changing frontend assets. The start command serves `dist/` when the build output is available and otherwise falls back to `static/`.
 
-## Deploy to Render (recommended)
+## Deploy to Railway (recommended)
 
-Ash Proxy needs a Node server that can keep proxy transport connections open. Render's Docker web service is the recommended starting point; the repository includes a `Dockerfile` and `render.yaml`.
+Ash Proxy runs as a Node server and uses WebSockets for proxy traffic. A persistent Docker service is a better fit for that workload than a serverless function. Railway can build the repository's root `Dockerfile` directly from GitHub; no Railway CLI or config file is required.
 
-1. Push this repository to a GitHub account you control.
-2. In Render, choose **New > Blueprint**, connect the repository, and apply the `render.yaml` blueprint. Alternatively, create a **Web Service** using the Docker runtime and this repository's `Dockerfile`.
-3. Set `ASH_PROXY_USERNAME` and `ASH_PROXY_PASSWORD` as secret environment variables in the Render service settings. Do not use the example password.
-4. Deploy and wait for the `/health` check to pass. Open the generated `onrender.com` URL and authenticate in your browser.
-5. For dependable long-lived proxy connections, select an always-on plan. Free instances may sleep or restart, which interrupts active sessions.
+> Before deploying, check Railway's current acceptable-use rules for web proxies. A working build does not guarantee that a provider will permit or continue hosting a proxy service.
 
-The container builds the frontend during image creation, binds to `0.0.0.0` on the host-provided `PORT` (default `8080`), and runs as the unprivileged `node` user.
+1. Push this repository to GitHub. In Railway, create an account and choose **New Project > Deploy from GitHub repo**. Connect GitHub if asked, then select `TECHYAko/ash-proxy` and the `techyako-ash-proxy-redesign` branch (or the branch containing your changes).
+2. Select the service Railway creates. In its **Settings**, confirm the **Root Directory** is `/` or blank so Railway can find the root `Dockerfile`. Railway should report that it detected and is using the Dockerfile. Do not enter a separate build or start command: the Dockerfile installs dependencies, builds the app, and starts the Node server.
+3. Open the service's **Variables** tab and add these two variables:
+   - `ASH_PROXY_USERNAME` — choose a username.
+   - `ASH_PROXY_PASSWORD` — use a unique password at least 16 characters long.
 
-Railway, Fly.io, or another persistent Node/Docker host can use the same Dockerfile. Configure the two credentials as secrets and allow inbound HTTPS and WebSocket traffic. If the host requires a port, use the `PORT` value it provides.
+   Save the variables and deploy the staged changes if Railway asks. Do not put credentials in GitHub or share them in chat. A deployment started before the variables exist can fail its first startup; adding them and redeploying is expected.
+4. In **Settings**, configure the health check path as `/health`, then deploy. The server listens on Railway's provided `PORT`, and `/health` returns a public `200` response for the platform check.
+5. After the deployment succeeds, go to **Settings > Networking > Public Networking** and select **Generate Domain**. Open the resulting `.railway.app` address. The browser should prompt for the username and password you set in step 3.
+6. Verify the public `/health` URL returns `{"status":"ok"}`, then sign in and test a proxied page. WebSocket proxy sessions can still disconnect during restarts, redeploys, or provider incidents.
 
-## Deploy to Vercel
+Railway's pricing and usage limits apply. Review them before exposing the service publicly. The Docker image uses Node 22, builds frontend assets during image creation, and runs as the unprivileged `node` user.
 
-Vercel Functions added WebSocket support in public beta in 2026. This repository's `vercel.json` exports the Node HTTP server as the function entry point so both HTTP requests and WebSocket upgrades can be routed. It can be used for testing or lighter usage, but a persistent Node service remains the simpler choice for long-running proxy sessions.
+## Other deployment options
 
-1. Push the repository to GitHub and import it in Vercel.
-2. Use Node.js 22. Let Vercel detect pnpm from `package.json`/`pnpm-lock.yaml`; use `pnpm install --frozen-lockfile` for the install command and `pnpm build` for the build command. Do not set a static output directory.
-3. In **Project Settings > Environment Variables**, add `ASH_PROXY_USERNAME` and `ASH_PROXY_PASSWORD` for the Production environment (and Preview only if you intend to expose preview deployments). Use a unique strong password.
-4. Confirm **Fluid Compute** is enabled, then deploy. On projects created before Fluid Compute became the default, enable it in the project's Functions settings and redeploy.
-5. Open the deployed URL, authenticate, and try both a regular proxied page and a site that uses WebSocket transport. Review the Vercel function and WebSocket logs if transport does not connect.
+### Render
 
-WebSocket support is still a Vercel public beta and connections end when the function reaches its configured maximum duration. The checked-in configuration sets a 300-second maximum; platform plan limits and pricing apply. Test reconnect behavior and usage before relying on Vercel for continuous sessions. See Vercel's [WebSocket guide](https://vercel.com/docs/functions/websockets), [Function limits](https://vercel.com/docs/functions/limitations), and [WebSocket support announcement](https://vercel.com/changelog/websocket-support-is-now-in-public-beta).
+The repository also includes a `render.yaml` blueprint. In Render, create a Blueprint from the GitHub repository, select the branch with your changes, set `ASH_PROXY_USERNAME` and `ASH_PROXY_PASSWORD` in the service's environment settings, and deploy. Render free instances may sleep or restart and interrupt active proxy sessions. Use this option only if your Render account is active and the provider permits your intended use.
+
+### Vercel (experimental)
+
+The repository includes a Vercel configuration, and Vercel WebSocket support is in public beta. However, Ash Proxy needs a running Node server for its WebSocket proxy traffic, and serverless function limits can interrupt connections. Treat Vercel as experimental for this application, not the recommended beginner deployment path.
+
+The checked-in config routes requests to the Node server and sets a 300-second maximum function duration, but that does not guarantee the function will start or keep proxy connections alive. See Vercel's [WebSocket guide](https://vercel.com/docs/functions/websockets) and [Function limits](https://vercel.com/docs/functions/limitations).
 
 ## Use Cloudflare
 
@@ -66,7 +71,7 @@ Cloudflare Pages and Workers are not drop-in hosts for this Node/Express applica
 
 To use Cloudflare with a supported host:
 
-1. Deploy Ash Proxy to Render, Railway, Fly.io, or another persistent Node host first.
+1. Deploy Ash Proxy to Railway or another persistent Node host first.
 2. Add a custom domain to that host using its instructions.
 3. In Cloudflare DNS, add the DNS record pointing the custom hostname to the host's target. Enable Cloudflare proxying only after the origin hostname and TLS configuration are correct.
 4. Set SSL/TLS to **Full (strict)**, ensure WebSockets are enabled in **Network**, and avoid caching authenticated pages or proxy/upgrade traffic. Retest the `/health` endpoint, Basic Auth, and WebSocket transports through the custom domain.
