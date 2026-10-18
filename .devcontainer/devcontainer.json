@@ -1,0 +1,9 @@
+// See https://containers.dev/implementors/json_reference/ for configuration reference
+{
+  "name": "Ash Proxy",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "postCreateCommand": "npm install"
+}

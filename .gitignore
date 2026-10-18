@@ -1,12 +1,10 @@
-node_modules
-dist
-build
-data/ 
-decoy/
-test/
+# dependencies
+/node_modules
 
-.idea
+# System Files
 .DS_Store
-.hintrc
-.gitpod.yml 
-.env
+Thumbs.db
+.breakpoints
+
+memory.txt
+old.app.js

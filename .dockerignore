@@ -1,9 +1,8 @@
 .git
+.github
+.vscode
+node_modules
+npm-debug.log
 .env
 .env.*
 !.env.example
-node_modules
-dist
-data
-npm-debug.log*
-pnpm-debug.log*

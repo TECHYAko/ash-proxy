@@ -1,7 +1,7 @@
 {
-  "name": "ash-proxy",
-  "description": "Ash Proxy web application",
+  "name": "Ash Proxy",
+  "description": "A quieter, cleaner way to browse.",
   "repository": "https://github.com/TECHYAko/ash-proxy",
-  "keywords": ["proxy", "web"],
-  "image": "heroku/nodejs"
+  "logo": "https://raw.githubusercontent.com/TECHYAko/ash-proxy/main/public/images/ash-mark.svg",
+  "keywords": ["proxy", "ash-proxy", "web"]
 }
