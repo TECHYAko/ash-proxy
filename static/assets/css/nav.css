@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background-color: #101114;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+}
+
+.header2 {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 68px;
+  padding: 0 max(24px, calc((100vw - 1120px) / 2));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(16, 17, 20, 0.78);
+  backdrop-filter: blur(20px);
+}
+
+.header2 a {
+  color: #b7b8c0;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.header2 a.logo {
+  display: inline-flex;
+  align-items: center;
+  color: #f3f3f5;
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.6px;
+}
+
+.header2-right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.header2-right a {
+  padding: 9px 12px;
+  border-radius: 9px;
+}
+
+.header2 a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 560px) {
+  .header2 { padding: 0 14px; }
+  .header2-right { gap: 0; }
+  .header2-right a { padding: 9px 7px; font-size: 12px; }
+  .header2-right a:nth-child(4) { display: none; }
+}

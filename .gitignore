@@ -1,10 +1,4 @@
-# dependencies
-/node_modules
-
-# System Files
-.DS_Store
-Thumbs.db
-.breakpoints
-
-memory.txt
-old.app.js
+node_modules
+.env
+.env.*
+npm-debug.log
