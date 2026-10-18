@@ -1,6 +1,6 @@
 .error {
    color: var(--text);
-   font-family: "Inter", sans-serif;
+   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
    font-weight: 900;
    top: 15%;
    text-align: center;

@@ -1,11 +1,5 @@
 [
   {
-    "name": "Request An App",
-    "link": "https://forms.gle/vwdHN3iPz5cLaHaMA",
-    "image": "/assets/media/icons/request.webp",
-    "categories": ["all"]
-  },
-  {
     "name": "Create Custom App",
     "image": "/assets/media/icons/custom.webp",
     "categories": ["all"],
@@ -273,7 +267,7 @@
   },
   {
     "name": "YouTube",
-    "link": "https://youtube.com",
+    "link": "https://www.youtube.com/",
     "image": "/assets/media/icons/youtube.webp",
     "categories": ["all", "social", "stream"],
     "proxy": "sj"

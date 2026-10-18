@@ -32,47 +32,13 @@ function isTabsPage() {
 }
 
 window.addEventListener("load", async () => {
-  if (isTabsPage()) {
+  if (isTabsPage() || !("serviceWorker" in navigator)) {
     swReady = true;
     swReadyResolve();
     return;
   }
-
-  if (!("serviceWorker" in navigator)) {
-    swReady = true;
-    swReadyResolve();
-    return;
-  }
-
-  try {
-    const registration = await navigator.serviceWorker.register("../sw.js", {
-      scope: "/uv/",
-    });
-
-    if (registration.active) {
-      swReady = true;
-      swReadyResolve();
-      return;
-    }
-
-    const worker = registration.installing || registration.waiting;
-    if (worker) {
-      worker.addEventListener("statechange", function onStateChange() {
-        if (this.state === "activated") {
-          swReady = true;
-          swReadyResolve();
-          worker.removeEventListener("statechange", onStateChange);
-        }
-      });
-    } else {
-      swReady = true;
-      swReadyResolve();
-    }
-  } catch (err) {
-    console.error("[SW] registration failed:", err);
-    swReady = true;
-    swReadyResolve();
-  }
+  swReady = true;
+  swReadyResolve();
 });
 
 async function waitForServiceWorker() {
@@ -144,9 +110,6 @@ function blockPageUrl(url, verdict) {
 window.blockPages = { check: checkBlocked, pageUrl: blockPageUrl };
 
 async function navigate(value, path, proxyOverride) {
-  await waitForServiceWorker();
-  if (window.__settled) await window.__settled();
-
   let url = value.trim();
   const engine = store.get("engine");
   const searchUrl = engine ? engine : "https://search.brave.com/search?q=";
@@ -160,6 +123,11 @@ async function navigate(value, path, proxyOverride) {
   const verdict = await checkBlocked(url);
   if (verdict) {
     const blockedPage = blockPageUrl(url, verdict);
+    if (!isTabsPage()) {
+      sessionStorage.setItem("GoUrl", blockedPage);
+      location.href = path || "/tabs";
+      return;
+    }
     if (path) {
       sessionStorage.setItem("GoUrl", blockedPage);
       location.href = path;
@@ -168,6 +136,15 @@ async function navigate(value, path, proxyOverride) {
     }
     return;
   }
+
+  if (!isTabsPage()) {
+    sessionStorage.setItem("GoUrl", url);
+    location.href = path || "/tabs";
+    return;
+  }
+
+  await waitForServiceWorker();
+  if (window.__settled) await window.__settled();
 
   const proxyChoice = proxyOverride ?? store.get("proxy");
   const proxyUrl = await encodeUrl(url, proxyChoice);

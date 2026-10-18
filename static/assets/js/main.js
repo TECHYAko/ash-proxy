@@ -1,81 +1,20 @@
 // Theme is applied immediately, to prevent flashing on page load
 (() => {
   const themes = {
-    black: "/assets/css/themes/dark/black.css",
-    midnight: "/assets/css/themes/dark/midnight.css",
-    tokyo: "/assets/css/themes/dark/tokyo-night.css",
-    sky: "/assets/css/themes/dark/sky.css",
-    arctic: "/assets/css/themes/dark/arctic.css",
-    forest: "/assets/css/themes/dark/forest.css",
-    rose: "/assets/css/themes/dark/rose.css",
-    retro: "/assets/css/themes/dark/retro.css",
-    neon: "/assets/css/themes/dark/neon.css",
-    ocean: "/assets/css/themes/dark/deep-ocean.css",
-    synthwave: "/assets/css/themes/dark/synthwave.css",
     light: "/assets/css/themes/light/light.css",
-    cream: "/assets/css/themes/light/cream.css",
-    parchment: "/assets/css/themes/light/parchment.css",
-    red: "/assets/css/themes/color/red.css",
-    orange: "/assets/css/themes/color/orange.css",
-    yellow: "/assets/css/themes/color/yellow.css",
-    green: "/assets/css/themes/color/green.css",
-    turquoise: "/assets/css/themes/color/turquoise.css",
-    blue: "/assets/css/themes/color/blue.css",
-    purple: "/assets/css/themes/color/purple.css",
-    pink: "/assets/css/themes/color/pink.css",
-    pastelRed: "/assets/css/themes/pastel/red.css",
-    pastelOrange: "/assets/css/themes/pastel/orange.css",
-    pastelYellow: "/assets/css/themes/pastel/yellow.css",
-    pastelGreen: "/assets/css/themes/pastel/green.css",
-    pastelTurquoise: "/assets/css/themes/pastel/turquoise.css",
-    pastelBlue: "/assets/css/themes/pastel/blue.css",
-    pastelPurple: "/assets/css/themes/pastel/purple.css",
-    pastelPink: "/assets/css/themes/pastel/pink.css",
-    mocha: "/assets/css/themes/catppuccin/mocha.css",
-    macchiato: "/assets/css/themes/catppuccin/macchiato.css",
-    frappe: "/assets/css/themes/catppuccin/frappe.css",
-    latte: "/assets/css/themes/catppuccin/latte.css",
   };
 
-  const legacyThemes = {
-    d: "default",
-    oled: "black",
-    oneDark: "midnight",
-    tokyoNight: "tokyo",
-    nord: "arctic",
-    everforest: "forest",
-    rosePine: "rose",
-    gruvbox: "retro",
-    monokai: "neon",
-    solarized: "ocean",
-    Inverted: "light",
-    gruvboxLight: "cream",
-    solarizedLight: "parchment",
-    colorRed: "red",
-    colorOrange: "orange",
-    colorYellow: "yellow",
-    colorGreen: "green",
-    colorTurquoise: "turquoise",
-    colorBlue: "blue",
-    colorPurple: "purple",
-    colorPink: "pink",
-    catppuccinMocha: "mocha",
-    catppuccinMacchiato: "macchiato",
-    catppuccinFrappe: "frappe",
-    catppuccinLatte: "latte",
-  };
-
-  let themeid = store.get("theme");
-  if (Object.hasOwn(legacyThemes, themeid)) {
-    themeid = legacyThemes[themeid];
-    store.set("theme", themeid);
-  }
+  const previousLightThemes = new Set(["light", "cream", "parchment", "latte", "catppuccinLatte", "Inverted", "gruvboxLight", "solarizedLight"]);
+  const previousTheme = store.get("theme");
+  const themeid = previousLightThemes.has(previousTheme) ? "light" : "dark";
+  if (previousTheme !== themeid) store.set("theme", themeid);
 
   function applyTheme(themeId) {
     let themeLink = document.getElementById("active-theme");
-    let customThemeStyle = document.getElementById("active-custom-theme");
+    const customThemeStyle = document.getElementById("active-custom-theme");
 
-    if (themes[themeId]) {
+    document.documentElement.dataset.theme = themeId === "light" ? "light" : "dark";
+    if (themeId === "light") {
       if (!themeLink) {
         themeLink = document.createElement("link");
         themeLink.id = "active-theme";
@@ -86,17 +25,7 @@
       customThemeStyle?.remove();
     } else {
       themeLink?.remove();
-      const customThemeCss = store.getRaw(`t${themeId}`);
-      if (customThemeCss) {
-        if (!customThemeStyle) {
-          customThemeStyle = document.createElement("style");
-          customThemeStyle.id = "active-custom-theme";
-          document.head.appendChild(customThemeStyle);
-        }
-        customThemeStyle.textContent = customThemeCss;
-      } else {
-        customThemeStyle?.remove();
-      }
+      customThemeStyle?.remove();
     }
 
   }
@@ -284,37 +213,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const savedBackgroundImage = store.get("backgroundImage");
-  const isTabsPage = Boolean(document.getElementById("frame-container"));
-  const storedMode = store.get("backgroundMode");
-  const legacyCustom = storedMode === "custom" || (!storedMode && savedBackgroundImage && savedBackgroundImage !== "none");
-  const backgroundMode = legacyCustom ? "default" : storedMode || (savedBackgroundImage === "none" ? "none" : "gradient");
-  const storedImageMode = store.get("backgroundImageMode");
-  const imageMode = legacyCustom || storedImageMode === "custom" ? "custom" : storedImageMode === "all" ? "all" : "none";
-  const backgroundBlur = Math.max(0, Math.min(100, Number(store.get("backgroundBlur")) || 0));
-  document.body.style.setProperty("--background-blur", backgroundBlur);
-
-  if (backgroundMode === "gradient") {
-    document.body.dataset.background = "gradient";
-    document.body.dataset.gradient = store.get("gradientStyle") || "multi";
-  } else if (backgroundMode === "none") {
-    document.body.dataset.background = "solid";
+  for (const key of ["backgroundImage", "backgroundKey", "backgroundMode", "backgroundImageMode", "backgroundBlur", "gradientStyle", "particles"]) {
+    store.remove(key);
   }
-
-  const libraryBackground = imageMode === "all" ? backgroundUrlFor(store.get("backgroundKey")) : "";
-  if (!isTabsPage && ((imageMode === "custom" && savedBackgroundImage && savedBackgroundImage !== "none") || libraryBackground)) {
-    const safeBackground = libraryBackground || reconstructSafeUrl(savedBackgroundImage);
-    if (safeBackground) {
-      document.body.dataset.customBackground = "true";
-      document.body.style.setProperty("--custom-background-image", `url('${safeBackground}')`);
-    }
-  }
-
-  if (!inShell() && !document.querySelector('script[src="/assets/js/particles.js"]')) {
-    const particleScript = document.createElement("script");
-    particleScript.src = "/assets/js/particles.js";
-    document.head.appendChild(particleScript);
-  }
+  delete document.body.dataset.background;
+  delete document.body.dataset.gradient;
+  delete document.body.dataset.customBackground;
+  document.body.style.removeProperty("--custom-background-image");
+  document.body.style.removeProperty("--background-blur");
 
   // Pointer Effects — cursor.js is only loaded when an effect is active
   const CURSOR_EFFECTS = [

@@ -172,12 +172,13 @@ document.addEventListener("DOMContentLoaded", () => {
   syncCustomCloakRow();
 
   const themeDropdown = document.getElementById("theme-dropdown");
-  themeDropdown.value = store.get("theme") || "default";
+  themeDropdown.value = store.get("theme") === "light" ? "light" : "dark";
   themeDropdown.addEventListener("change", function () {
     themeChange(this);
   });
 
   const bgDropdown = document.getElementById("background-dropdown");
+  if (bgDropdown) {
   const gradientRow = document.getElementById("gradient-style-row");
   const gradientDropdown = document.getElementById("gradient-dropdown");
   const bgCustomRow = document.getElementById("background-custom-row");
@@ -324,8 +325,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.style.setProperty("--background-blur", savedBlur);
   applyBackground();
   applyBackgroundImage();
+  }
 
   const particlesDropdown = document.getElementById("particles-dropdown");
+  if (particlesDropdown) {
   const savedParticles = store.get("particles");
   const shimmerPatterns = ["grid", "wiggle", "wiggle-grid", "starfield", "twist", "displace", "shimmer", "organic", "shimmer-aurora", "morph", "meteors"];
   const savedParticleMode = savedParticles;
@@ -472,6 +475,7 @@ document.addEventListener("DOMContentLoaded", () => {
     particlesCustomPanel.style.display = open ? "none" : "";
     store.set("shimmerControlsOpen", open ? "false" : "true");
   });
+  }
 
   const tabsLayoutDropdown = document.getElementById("tabs-layout-dropdown");
   tabsLayoutDropdown.value = store.get("tabsLayout") === "vertical" ? "vertical" : "horizontal";
@@ -717,11 +721,7 @@ function redirectToMainDomain() {
 
 function themeChange(selectElement) {
   const value = selectElement.value;
-  if (value === "default") {
-    store.remove("theme");
-  } else {
-    store.set("theme", value);
-  }
+  store.set("theme", value === "light" ? "light" : "dark");
   window.applyTheme?.(value);
 }
 

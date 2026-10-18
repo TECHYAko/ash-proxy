@@ -14,15 +14,19 @@
   <link rel="stylesheet" href="/assets/css/ash.css" />
   <script src="/assets/js/storage.js"></script>
   <script src="/assets/js/main.js"></script>
-  <script src="/assets/js/vendor.js"></script>
   <script defer src="/assets/js/search.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
-<body>
+<body class="catalogue-page games-page">
   <div class="nav-bar"></div>
+  <header class="catalogue-heading">
+    <p class="catalogue-kicker">Take a break</p>
+    <h1>Games</h1>
+    <p>Find a game and pick up where you left off.</p>
+  </header>
   <div class="input-container">
-    <input type="text" id="search" onkeyup="bar()" placeholder="Search" />
+    <input type="search" id="search" onkeyup="bar()" placeholder="Search games" aria-label="Search games" />
     <select id="category" name="category" onchange="category()">
       <option value="all">&#65;&#108;&#108;</option>
       <option value="android">
@@ -39,10 +43,6 @@
     <div class="apps"></div>
   </div>
   <script src="/assets/js/launcher.js"></script>
-  <script src="./assets/ultraviolet/uv.bundle.js"></script>
-  <script src="/assets/scramjet/scramjet.all.js"></script>
-  <script src="/assets/scramjet/scramjet.config.js"></script>
-  <script src="./assets/ultraviolet/uv.config.js"></script>
 </body>
 
 </html>

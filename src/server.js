@@ -139,6 +139,11 @@ const jsStaticOptions = {
     } else if (ext === ".wasm") {
       res.type("application/wasm");
     }
+    if (vendorMap && ext !== ".html") {
+      res.setHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+    } else if (ext === ".html") {
+      res.setHeader("Cache-Control", "no-cache");
+    }
   },
 };
 
@@ -194,9 +199,9 @@ const routes = [
 // clean. In static/dev vendorMap is null, so the clean routes are used as-is.
 routes.forEach(route => {
   const servePath = vendorMap?.routes?.[route.path] || route.path;
-  app.get(servePath, (_req, res) => {
-    res.sendFile(path.join(SERVE_DIR, route.file));
-  });
+  const sendPage = (_req, res) => res.sendFile(path.join(SERVE_DIR, route.file));
+  app.get(servePath, sendPage);
+  if (servePath !== route.path) app.get(route.path, sendPage);
 });
 
 app.use((_req, res) => {

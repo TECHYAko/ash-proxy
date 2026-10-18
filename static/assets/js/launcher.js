@@ -237,7 +237,7 @@ function renderAppCard(app, appIndex, isCustom = false) {
   link.appendChild(paragraph);
   columnDiv.appendChild(link);
 
-  if (appIndex !== 0 && appIndex !== 1) {
+  if (appIndex !== 0) {
     columnDiv.appendChild(createPinButton(appIndex));
   }
 
@@ -298,15 +298,14 @@ function loadAppsFromJson() {
         appsContainer.appendChild(nonPinnedContainer);
       }
 
-      const specialCards = appsList.splice(0, 2);
-
-      appsList.sort((a, b) => {
+      const customLauncher = appsList.find(app => app.custom === "true");
+      const regularApps = appsList.filter(app => app !== customLauncher);
+      regularApps.sort((a, b) => {
         if (a.name.startsWith("[Custom]")) return -1;
         if (b.name.startsWith("[Custom]")) return 1;
         return a.name.localeCompare(b.name);
       });
-
-      appsList.unshift(...specialCards);
+      appsList = customLauncher ? [customLauncher, ...regularApps] : regularApps;
 
       let appIndex = 0;
 
@@ -315,7 +314,7 @@ function loadAppsFromJson() {
 
         const card = renderAppCard(app, appIndex);
 
-        if (appIndex === 0 || appIndex === 1) {
+        if (app.custom === "true") {
           pinnedContainer.appendChild(card);
         } else if (pinnedList != null && isAppPinned(appIndex, pinnedList)) {
           pinnedContainer.appendChild(card);
@@ -330,6 +329,13 @@ function loadAppsFromJson() {
     })
     .catch(error => {
       console.error("Error fetching app data:", error);
+      const container = document.getElementById("apps-container");
+      if (container) {
+        const message = document.createElement("p");
+        message.className = "catalogue-empty-state";
+        message.textContent = "Apps could not be loaded. Refresh the page to try again.";
+        container.replaceChildren(message);
+      }
     });
 }
 
