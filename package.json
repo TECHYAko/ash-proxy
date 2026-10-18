@@ -1,7 +1,7 @@
 {
   "name": "ash-proxy",
   "description": "Ash Proxy is a web proxy with a clean, customizable interface.",
-  "version": "6.2.0",
+  "version": "0.1.0-dev",
   "type": "module",
   "engines": {
     "npm": ">=7.0.0",

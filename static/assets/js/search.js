@@ -64,7 +64,7 @@ if (form && input && !isTabsPage()) {
 
 function isScramjet(proxyOverride) {
   const choice = proxyOverride ?? store.get("proxy");
-  return choice === "sj";
+  return choice === "sj" || choice === "scramjet";
 }
 
 async function encodeUrl(url, proxyOverride) {
@@ -124,6 +124,8 @@ async function navigate(value, path, proxyOverride) {
   if (verdict) {
     const blockedPage = blockPageUrl(url, verdict);
     if (!isTabsPage()) {
+      if (proxyOverride) sessionStorage.setItem("ProxyOverride", proxyOverride);
+      else sessionStorage.removeItem("ProxyOverride");
       sessionStorage.setItem("GoUrl", blockedPage);
       location.href = path || "/tabs";
       return;
@@ -138,6 +140,8 @@ async function navigate(value, path, proxyOverride) {
   }
 
   if (!isTabsPage()) {
+    if (proxyOverride) sessionStorage.setItem("ProxyOverride", proxyOverride);
+    else sessionStorage.removeItem("ProxyOverride");
     sessionStorage.setItem("GoUrl", url);
     location.href = path || "/tabs";
     return;

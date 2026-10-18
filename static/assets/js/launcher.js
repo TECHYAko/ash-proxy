@@ -128,6 +128,8 @@ function createCustomApp() {
   const card = renderAppCard(customApp, 0, true);
   const pinnedContainer = document.querySelector(".pinned");
   pinnedContainer.appendChild(card);
+  syncPinnedSection();
+  applyFilters();
 }
 
 function getPinnedApps() {
@@ -155,16 +157,36 @@ function togglePin(appIndex) {
 
   const card = document.querySelector(`.column[data-app-index="${appIndex}"]`);
   if (card) {
+    const pinButton = card.querySelector(".catalogue-pin-button");
     const pinnedContainer = document.querySelector(".pinned");
     const nonPinnedContainer = document.querySelector(".apps");
     if (isCurrentlyPinned) {
+      card.classList.remove("is-pinned");
+      pinButton?.setAttribute("aria-pressed", "false");
+      pinButton?.setAttribute("aria-label", "Pin");
+      if (pinButton) pinButton.title = "Pin";
       const unpinnedCards = Array.from(nonPinnedContainer.getElementsByClassName("column"));
       const cardName = stripZeroWidth(card.getElementsByTagName("p")[0].textContent).toLowerCase();
       const insertBefore = unpinnedCards.find(c => stripZeroWidth(c.getElementsByTagName("p")[0].textContent).toLowerCase() > cardName);
       nonPinnedContainer.insertBefore(card, insertBefore ?? null);
     } else {
+      card.classList.add("is-pinned");
+      pinButton?.setAttribute("aria-pressed", "true");
+      pinButton?.setAttribute("aria-label", "Unpin");
+      if (pinButton) pinButton.title = "Unpin";
       pinnedContainer.appendChild(card);
     }
+    syncPinnedSection();
+    applyFilters();
+  }
+}
+
+function syncPinnedSection() {
+  const section = document.querySelector(".pinned-section");
+  const pinned = document.querySelector(".pinned");
+  if (section && pinned) {
+    const hasVisiblePinned = Array.from(pinned.querySelectorAll(".column")).some(card => card.style.display !== "none");
+    section.classList.toggle("has-items", hasVisiblePinned);
   }
 }
 
@@ -178,43 +200,59 @@ function createPinButton(appIndex) {
   pinIcon.ariaHidden = true;
 
   const button = document.createElement("button");
+  button.type = "button";
+  button.className = "catalogue-pin-button";
   button.appendChild(pinIcon);
-  button.style.cssText = `
-    float: right;
-    cursor: pointer;
-    background-color: rgb(45,45,45);
-    border-radius: 50%;
-    border-color: transparent;
-    color: white;
-    top: -200px;
-    position: relative;
-  `;
   button.onclick = () => togglePin(appIndex);
   button.title = "Pin";
+  button.setAttribute("aria-label", "Pin");
+  button.setAttribute("aria-pressed", "false");
 
   return button;
+}
+
+function createAppFallback(name) {
+  const fallback = document.createElement("span");
+  fallback.className = "catalogue-app-fallback";
+  fallback.setAttribute("aria-hidden", "true");
+  fallback.textContent = Array.from(stripZeroWidth(name.trim()))[0]?.toUpperCase() || "A";
+  return fallback;
 }
 
 function renderAppCard(app, appIndex, isCustom = false) {
   const columnDiv = document.createElement("div");
   columnDiv.classList.add("column");
+  if (app.custom === "true") columnDiv.classList.add("custom-app-card");
+  columnDiv.style.setProperty("--card-index", String(appIndex % 16));
 
   const categories = isCustom ? "all" : (app.categories || []).join(" ");
   columnDiv.setAttribute("data-category", categories);
   columnDiv.setAttribute("data-app-index", appIndex);
 
   const link = document.createElement("a");
-  link.onclick = () => handleAppClick(app);
+  link.className = "catalogue-card-link";
+  link.href = typeof app.link === "string" ? app.link : "#";
+  link.setAttribute("aria-label", `Open ${stripZeroWidth(app.name)}`);
+  link.addEventListener("click", event => {
+    event.preventDefault();
+    handleAppClick(app);
+  });
 
+  const visual = document.createElement("span");
+  visual.className = "catalogue-card-visual";
   const image = document.createElement("img");
-  image.width = 145;
-  image.height = 145;
+  image.alt = "";
   image.loading = "lazy";
+  image.decoding = "async";
 
   if (app.image) {
     image.src = app.image;
+    image.addEventListener("error", () => {
+      if (image.isConnected) image.replaceWith(createAppFallback(app.name));
+    }, { once: true });
+    visual.appendChild(image);
   } else {
-    image.style.display = "none";
+    visual.appendChild(createAppFallback(app.name));
   }
 
   const paragraph = document.createElement("p");
@@ -233,12 +271,19 @@ function renderAppCard(app, appIndex, isCustom = false) {
     app.say = app.say || "This app is currently experiencing some issues, it may not work for you.";
   }
 
-  link.appendChild(image);
+  link.appendChild(visual);
   link.appendChild(paragraph);
   columnDiv.appendChild(link);
 
   if (appIndex !== 0) {
-    columnDiv.appendChild(createPinButton(appIndex));
+    const pinButton = createPinButton(appIndex);
+    if (getPinnedApps().includes(appIndex)) {
+      columnDiv.classList.add("is-pinned");
+      pinButton.setAttribute("aria-pressed", "true");
+      pinButton.title = "Unpin";
+      pinButton.setAttribute("aria-label", "Unpin");
+    }
+    columnDiv.appendChild(pinButton);
   }
 
   return columnDiv;
@@ -292,12 +337,6 @@ function loadAppsFromJson() {
       const pinnedContainer = document.querySelector(".pinned");
       const pinnedList = getPinnedApps();
 
-      const appsContainer = document.getElementById("apps-container");
-      if (appsContainer) {
-        appsContainer.appendChild(pinnedContainer);
-        appsContainer.appendChild(nonPinnedContainer);
-      }
-
       const customLauncher = appsList.find(app => app.custom === "true");
       const regularApps = appsList.filter(app => app !== customLauncher);
       regularApps.sort((a, b) => {
@@ -315,7 +354,7 @@ function loadAppsFromJson() {
         const card = renderAppCard(app, appIndex);
 
         if (app.custom === "true") {
-          pinnedContainer.appendChild(card);
+          nonPinnedContainer.appendChild(card);
         } else if (pinnedList != null && isAppPinned(appIndex, pinnedList)) {
           pinnedContainer.appendChild(card);
         } else {
@@ -326,6 +365,8 @@ function loadAppsFromJson() {
       });
 
       loadCustomAppsInline();
+      syncPinnedSection();
+      applyFilters();
     })
     .catch(error => {
       console.error("Error fetching app data:", error);
@@ -366,6 +407,16 @@ function applyFilters() {
 
     card.style.display = matchesSearch && matchesCategory ? "block" : "none";
   });
+
+  const visibleCount = Array.from(document.getElementsByClassName("column")).filter(card => card.style.display !== "none").length;
+  const totalCount = document.querySelectorAll(".column").length;
+  const count = document.getElementById("catalogue-count");
+  const empty = document.getElementById("catalogue-no-results");
+  if (count) count.textContent = visibleCount === totalCount
+    ? `${totalCount} ${isGamesPage ? "games" : "apps"}`
+    : `${visibleCount} of ${totalCount} ${isGamesPage ? "games" : "apps"}`;
+  if (empty) empty.hidden = visibleCount > 0;
+  syncPinnedSection();
 }
 
 function filterByCategory() {
@@ -381,4 +432,12 @@ window.bar = filterBySearchTerm;
 
 document.addEventListener("DOMContentLoaded", () => {
   loadAppsFromJson();
+
+  document.addEventListener("keydown", event => {
+    if (event.key !== "/" || event.ctrlKey || event.metaKey || event.altKey) return;
+    const target = event.target;
+    if (target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) return;
+    event.preventDefault();
+    document.getElementById("search")?.focus();
+  });
 });

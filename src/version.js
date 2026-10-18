@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { inflateSync } from "node:zlib";
 
 const VERSION_TOKENS = [
-  ["{{VERSION}}", info => (info.version ? `v${info.version}` : "-")],
+  ["{{VERSION}}", info => info.version || "-"],
   ["{{LAST_UPDATED}}", info => info.updated || "-"],
 ];
 export const VERSION_TOKEN_COUNT = VERSION_TOKENS.length;

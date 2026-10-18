@@ -703,8 +703,8 @@ function routeRewriteTable(routes) {
     [`"tabs"`, `"${routes["/tabs"]}"`],
   ];
 }
-// Existing internal links plus the lazy-load navigation handoff added in search.js.
-const ROUTE_REWRITE_COUNT = 18;
+// Static internal links, the bottom dock, and the lazy-load navigation handoff.
+const ROUTE_REWRITE_COUNT = 20;
 
 function applyRouteRewrites(source, table) {
   let count = 0;
@@ -1976,7 +1976,7 @@ async function build() {
   const WRAPPER_OPEN = /<(?:span|x-a|x-b|ab-x|s-p)>/g;
   const versionInfo = await resolveVersionInfo();
   let versionInjections = 0;
-  console.log(`Settings version card: ${versionInfo.version ? `v${versionInfo.version}` : "-"} / ${versionInfo.updated ?? "-"}`);
+  console.log(`Settings version card: ${versionInfo.version ?? "-"} / ${versionInfo.updated ?? "-"}`);
   console.log(`\nUpdating ${htmlFiles.length} HTML files${OBFUSCATE_HTML ? " + obfuscating" : ""}...\n`);
 
   await Promise.all(

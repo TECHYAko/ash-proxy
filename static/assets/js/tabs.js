@@ -6,12 +6,54 @@ function prependHttps(url) {
   return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
 }
 
-function isScramjetEnabled() {
-  return store.get("proxy") === "sj";
+function isScramjetEnabled(proxyOverride) {
+  return proxyOverride === "scramjet" || (proxyOverride ?? store.get("proxy")) === "sj";
 }
 
-async function encodeProxyUrl(url) {
-  if (isScramjetEnabled()) {
+let proxyServiceWorkerPromise;
+
+async function ensureProxyServiceWorker() {
+  if (!("serviceWorker" in navigator)) {
+    console.error("[SW] Service workers are unavailable; proxied browsing cannot start.");
+    alert("Ash Proxy needs service worker support to browse websites. Enable it in your browser and reload.");
+    return false;
+  }
+
+  if (!proxyServiceWorkerPromise) {
+    proxyServiceWorkerPromise = navigator.serviceWorker.register("../sw.js", { scope: "/uv/" }).then(async registration => {
+      const worker = registration.active?.state === "activated" ? registration.active : registration.installing ?? registration.waiting;
+      if (!worker) throw new Error("Service worker registration has no active or installing worker.");
+      if (worker.state !== "activated") {
+        await new Promise((resolve, reject) => {
+          const onStateChange = () => {
+            if (worker.state === "activated") {
+              worker.removeEventListener("statechange", onStateChange);
+              resolve();
+            } else if (worker.state === "redundant") {
+              worker.removeEventListener("statechange", onStateChange);
+              reject(new Error("Proxy service worker became redundant before activation."));
+            }
+          };
+          worker.addEventListener("statechange", onStateChange);
+          onStateChange();
+        });
+      }
+      return true;
+    });
+  }
+
+  try {
+    return await proxyServiceWorkerPromise;
+  } catch (error) {
+    proxyServiceWorkerPromise = null;
+    console.error("[SW] Proxy service worker registration failed:", error);
+    alert("Ash Proxy could not start its browsing engine. Reload the page and try again.");
+    return false;
+  }
+}
+
+async function encodeProxyUrl(url, proxyOverride) {
+  if (isScramjetEnabled(proxyOverride)) {
     if (window.__ready) await window.__ready;
     if (window.__urls?.encodeUrl) return window.__urls.encodeUrl(url);
   }
@@ -315,8 +357,6 @@ function goForward() {
 }
 
 window.addEventListener("load", () => {
-  navigator.serviceWorker.register("../sw.js", { scope: "/uv/" }).catch(err => console.error("[SW] registration failed:", err));
-
   const form = document.getElementById("search-form");
   const input = document.getElementById("input");
 
@@ -340,6 +380,7 @@ window.addEventListener("load", () => {
       if (frame.classList.contains("active")) addressBar.setAddress(url);
       return;
     }
+    if (!(await ensureProxyServiceWorker())) return;
     const proxyUrl = await encodeProxyUrl(url);
     delete frame.dataset.blockedUrl;
     frame.src = proxyUrl;
@@ -415,18 +456,26 @@ document.addEventListener("DOMContentLoaded", () => {
     return url;
   }
 
+  function takeHandoffProxy() {
+    const proxy = sessionStorage.getItem("ProxyOverride");
+    sessionStorage.removeItem("ProxyOverride");
+    return proxy;
+  }
+
   function setAllInactive() {
     for (const tab of tabList.querySelectorAll("li")) tab.classList.remove("active");
     for (const frame of iframeContainer.querySelectorAll("iframe")) frame.classList.remove("active");
   }
 
-  async function openInNewTab(destination) {
+  async function openInNewTab(destination, proxyOverride) {
     const verdict = await window.blockPages.check(destination);
     if (verdict) {
       createNewTab(window.blockPages.pageUrl(destination, verdict)).dataset.blockedUrl = destination;
       return;
     }
-    const proxyUrl = destination.startsWith("/") || destination.startsWith(window.location.origin) ? destination : window.__mkurl ? window.__mkurl(destination) : `/uv/${__uv$config.encodeUrl(destination)}`;
+    const isInternalUrl = destination.startsWith("/") || destination.startsWith(window.location.origin);
+    if (!isInternalUrl && !(await ensureProxyServiceWorker())) return;
+    const proxyUrl = isInternalUrl ? destination : await encodeProxyUrl(destination, proxyOverride);
     createNewTab(proxyUrl);
   }
 
@@ -450,7 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!destination) return;
 
     event.preventDefault();
-    openInNewTab(destination);
+    openInNewTab(destination).catch(error => console.error("[Tabs] Unable to open the requested page:", error));
   }
 
   function createNewTab(startUrl = null) {
@@ -593,7 +642,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const handoffUrl = takeHandoffUrl();
-  if (handoffUrl) openInNewTab(handoffUrl);
+  const handoffProxy = takeHandoffProxy();
+  if (handoffUrl) openInNewTab(handoffUrl, handoffProxy).catch(error => console.error("[Tabs] Unable to open the requested page:", error));
   else createNewTab(addressBar.INTERNAL_PAGES.home.route);
 });
 

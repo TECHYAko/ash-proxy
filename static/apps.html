@@ -20,14 +20,26 @@
 
 <body class="catalogue-page apps-page">
   <div class="nav-bar"></div>
-  <header class="catalogue-heading">
-    <p class="catalogue-kicker">Your library</p>
-    <h1>Apps</h1>
-    <p>Quick links to the places you visit most.</p>
-  </header>
-  <div class="input-container">
-    <input type="search" id="search" onkeyup="bar()" placeholder="Search apps" aria-label="Search apps" />
-    <select title="Category" id="category" name="category" onchange="category()">
+  <main class="catalogue-shell">
+    <header class="catalogue-heading">
+      <div class="catalogue-heading-copy">
+        <p class="catalogue-kicker">Your workspace</p>
+        <h1>Apps</h1>
+        <p>Your favorite corners of the web, all in one place.</p>
+      </div>
+      <span class="catalogue-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg>
+      </span>
+    </header>
+    <div class="input-container catalogue-toolbar">
+      <label class="catalogue-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.2 4.2"/></svg>
+        <input type="search" id="search" onkeyup="bar()" placeholder="Search your apps" aria-label="Search apps" />
+        <kbd>/</kbd>
+      </label>
+      <label class="catalogue-filter">
+        <span class="sr-only">Category</span>
+        <select title="Category" id="category" name="category" onchange="category()">
       <option value="all">&#65;&#108;&#108;</option>
       <option value="android">
         &#65;&#110;&#100;&#114;&#111;&#105;&#100;&#32;&#69;&#109;&#117;&#108;&#97;&#116;&#111;&#114;</option>
@@ -41,12 +53,22 @@
       <option value="ai">&#65;&#73;</option>
       <option value="emu">&#69;&#109;&#117;&#108;&#97;&#116;&#111;&#114;</option>
       <option value="mail">&#77;&#97;&#105;&#108;</option>
-    </select>
-  </div>
-  <div id="apps-container">
-    <div class="pinned"></div>
-    <div class="apps"></div>
-  </div>
+        </select>
+      </label>
+    </div>
+    <div class="catalogue-results-line"><span id="catalogue-count">Loading apps</span><span>Choose a tile to open it</span></div>
+    <div id="apps-container">
+      <section class="pinned-section" aria-label="Pinned apps">
+        <div class="catalogue-section-heading"><h2>Pinned</h2><span>Quick access</span></div>
+        <div class="pinned"></div>
+      </section>
+      <section class="apps-section" aria-label="All apps">
+        <div class="catalogue-section-heading"><h2>All apps</h2><span>Browse the collection</span></div>
+        <div class="apps"></div>
+      </section>
+      <p class="catalogue-empty-state" id="catalogue-no-results" hidden>No apps match that search. Try another name or category.</p>
+    </div>
+  </main>
   <script src="assets/js/launcher.js"></script>
 </body>
 

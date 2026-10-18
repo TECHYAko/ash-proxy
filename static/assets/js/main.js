@@ -144,17 +144,40 @@ document.addEventListener("DOMContentLoaded", () => {
   const nav = document.querySelector(".nav-bar");
 
   if (nav) {
-    const html = `
+    nav.classList.add("ash-menubar");
+    nav.innerHTML = `
       <a class="ash-brand" href="/home" aria-label="Ash Proxy home">
         <span class="ash-brand-mark" aria-hidden="true">A</span>
         <span class="ash-brand-name">ash<span>proxy</span></span>
       </a>
-      <div class="nav-bar-right">
-        <a class="navbar-link" href="/games"><i class="fa-solid fa-gamepad navbar-icon" aria-hidden="true"></i><span>Games</span></a>
-        <a class="navbar-link" href="/apps"><i class="fa-solid fa-grid-2 navbar-icon" aria-hidden="true"></i><span>Apps</span></a>
-        <a class="navbar-link" href="/settings"><i class="fa-solid fa-gear navbar-icon settings-icon" aria-hidden="true"></i><span>Settings</span></a>
-      </div>`;
-    nav.innerHTML = html;
+      <span class="ash-menubar-caption">A little more room to browse.</span>
+      <span class="ash-menubar-status"><i aria-hidden="true"></i> Ready</span>`;
+
+    const dock = document.createElement("nav");
+    dock.className = "ash-dock";
+    dock.setAttribute("aria-label", "Ash navigation");
+    dock.innerHTML = `
+      <a class="dock-item" href="/home" aria-label="Home" title="Home">
+        <span class="dock-icon dock-home" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span><span class="dock-label">Home</span>
+      </a>
+      <a class="dock-item" href="/apps" aria-label="Apps" title="Apps">
+        <span class="dock-icon dock-apps" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></span><span class="dock-label">Apps</span>
+      </a>
+      <a class="dock-item" href="/games" aria-label="Games" title="Games">
+        <span class="dock-icon dock-games" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.2 8.5h9.6a4.2 4.2 0 0 1 4.1 3.3l.7 3.1a2.2 2.2 0 0 1-3.6 2.1l-2.1-1.8H8.1L6 17a2.2 2.2 0 0 1-3.6-2.1l.7-3.1a4.2 4.2 0 0 1 4.1-3.3Z"/><path d="M7.5 10.9v3.2m-1.6-1.6h3.2" class="icon-cutout"/><circle cx="16.5" cy="12" r=".8" class="icon-cutout"/><circle cx="18.6" cy="14.1" r=".8" class="icon-cutout"/></svg></span><span class="dock-label">Games</span>
+      </a>
+      <a class="dock-item" href="/settings" aria-label="Settings" title="Settings">
+        <span class="dock-icon dock-settings" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="18" r="2"/></svg></span><span class="dock-label">Settings</span>
+      </a>`;
+
+    for (const item of dock.querySelectorAll(".dock-item")) {
+      const itemUrl = new URL(item.href, window.location.href);
+      if (itemUrl.pathname === window.location.pathname || (itemUrl.pathname.endsWith("/home") && window.location.pathname === "/")) {
+        item.classList.add("is-active");
+        item.setAttribute("aria-current", "page");
+      }
+    }
+    document.body.appendChild(dock);
   }
 
   // Favicon and Name Logic.

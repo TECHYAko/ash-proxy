@@ -270,7 +270,7 @@
     "link": "https://www.youtube.com/",
     "image": "/assets/media/icons/youtube.webp",
     "categories": ["all", "social", "stream"],
-    "proxy": "sj"
+    "proxy": "scramjet"
   },
   {
     "name": "YouTube Alternative (Invidious)",
