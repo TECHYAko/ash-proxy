@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101114">
-  <meta name="description" content="A quieter, cleaner way to browse.">
+  <meta name="theme-color" content="#111214">
+  <meta name="description" content="Ash Proxy — browse the web simply and privately.">
   <title>Ash Proxy</title>
   <link rel="icon" href="/assets/images/branding/favicon/ash.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/css/ash.css">
@@ -16,39 +16,30 @@
   <header class="topbar">
     <a class="brand" href="/" aria-label="Ash Proxy home">
       <img src="/assets/images/branding/favicon/ash.svg" alt="">
-      <span>ash<span class="brand-dot">.</span></span>
+      <span>Ash Proxy</span>
     </a>
     <nav aria-label="Main navigation">
       <a class="active" href="/">Browse</a>
-      <a href="/mathematics">Games</a>
       <a href="/ocean">Apps</a>
+      <a href="/mathematics">Games</a>
       <a href="/settings">Settings</a>
     </nav>
   </header>
 
   <main class="home">
-    <div class="eyebrow"><span class="status-dot"></span> A LITTLE MORE ROOM TO BROWSE</div>
-    <h1>Your web,<br><span>without the noise.</span></h1>
-    <p class="intro">A simple, private window to the internet.</p>
-
-    <form class="search-form" action="/photography" method="get">
-      <label class="sr-only" for="searchbar">Enter a web address or search term</label>
+    <h1>Browse the web</h1>
+    <p>Enter a website address or search with DuckDuckGo.</p>
+    <form class="search-form">
+      <label class="sr-only" for="searchbar">Website address or search term</label>
       <input id="searchbar" name="url" type="text" autocomplete="off" spellcheck="false"
-        placeholder="Enter a URL or search the web" required>
-      <button type="submit" aria-label="Browse">Go <span aria-hidden="true">↗</span></button>
+        placeholder="Search or enter a URL" required>
+      <button type="submit">Go</button>
     </form>
-    <p class="hint">Enter a web address or a search term to get started.</p>
-
-    <section class="shortcuts" aria-label="Quick links">
-      <a href="/photography"><span class="shortcut-icon">↗</span><span><strong>Browse the web</strong><small>Open a site through Ash</small></span></a>
-      <a href="/ocean"><span class="shortcut-icon">▦</span><span><strong>Explore apps</strong><small>Your frequently used sites</small></span></a>
-      <a href="/mathematics"><span class="shortcut-icon">⌘</span><span><strong>Play a game</strong><small>Take a quick break</small></span></a>
-    </section>
   </main>
 
   <footer class="footer">
-    <span>Ash Proxy <span class="footer-separator">/</span> Open source</span>
-    <a href="https://github.com/TECHYAko/ash-proxy" rel="noopener noreferrer">GitHub</a>
+    <span>Ash Proxy</span>
+    <a href="https://github.com/TECHYAko/ash-proxy" rel="noopener noreferrer">Source</a>
   </footer>
 </body>
 </html>

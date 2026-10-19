@@ -4,6 +4,9 @@ Ash Proxy is a self-hosted web proxy built from the
 [Interstellar V4 template](https://github.com/bruhwhyamiso-templates/Interstellar-V4-template),
 using Ultraviolet and Bare Server.
 
+Search terms are routed through the proxy to DuckDuckGo. Google Analytics is
+not included.
+
 ## Run locally
 
 Requires Node.js 22 and npm.
